@@ -179,17 +179,6 @@ class Sprite(pygame.sprite.Sprite):
     '''
     def update(self):
         pass
-        # if self.scene.keyState_['s']:
-        #     self.rect.y += 2
-        # elif self.scene.keyState_['d']:
-        #     self.rect.x += 2
-        # elif self.scene.keyState_['w']:
-        #     self.rect.y -= 2
-        # elif self.scene.keyState_['a']:
-        #     self.rect.x -= 2        
-        # if (self.rect.x, self.rect.y) == (400,400):
-        #     self.walkieTalkie.addMessage("QUIT") 
-        # print("called")
 
     def hide(self):
         self.isVisible = False
