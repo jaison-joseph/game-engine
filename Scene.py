@@ -6,6 +6,8 @@ pygame.init()
 class Scene:
     def __init__(self, size, sprites, frameRate: int, backgroundImgSrc = None, rgb = None) -> None:
         self.size_ = size
+        for i in sprites:
+            i.scene = self
         self.position_ = None
         self.sprites_ = pygame.sprite.Group(sprites)
         self.frameRate_ = frameRate
@@ -49,6 +51,7 @@ class Scene:
         }
         self.screen = pygame.display.set_mode(self.size_)
         self.mouseButton_ = []
+        self.keepGoing = True
         self.background = pygame.Surface(self.size_)
         if backgroundImgSrc is None:
             if rgb is None:
@@ -73,7 +76,7 @@ class Scene:
 
     def start(self):
         clock = pygame.time.Clock()
-        while True:
+        while self.keepGoing:
             clock.tick(self.frameRate_)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

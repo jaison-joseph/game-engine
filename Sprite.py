@@ -9,7 +9,7 @@ constants = {
 }
 
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, scene, width, height, imgFileName = None, rgb = None) -> None:
+    def __init__(self, scene, width, height, x = 0, y = 0, imgFileName = None, rgb = None) -> None:
 
         '''
         this call is a call to the base class for all game objects (i.e. sprites)
@@ -31,6 +31,9 @@ class Sprite(pygame.sprite.Sprite):
         by the sprites.Group.draw method
         '''
         self.rect = self.image.get_rect()
+
+        self.rect.x = x
+        self.rect.y = y
 
         '''
         coloring the sprite
@@ -175,14 +178,15 @@ class Sprite(pygame.sprite.Sprite):
     Used by the sprite.group.update calls
     '''
     def update(self):
-        if self.scene.keyState_['s']:
-            self.rect.y += 2
-        elif self.scene.keyState_['d']:
-            self.rect.x += 2
-        elif self.scene.keyState_['w']:
-            self.rect.y -= 2
-        elif self.scene.keyState_['a']:
-            self.rect.x -= 2        
+        pass
+        # if self.scene.keyState_['s']:
+        #     self.rect.y += 2
+        # elif self.scene.keyState_['d']:
+        #     self.rect.x += 2
+        # elif self.scene.keyState_['w']:
+        #     self.rect.y -= 2
+        # elif self.scene.keyState_['a']:
+        #     self.rect.x -= 2        
         # if (self.rect.x, self.rect.y) == (400,400):
         #     self.walkieTalkie.addMessage("QUIT") 
         # print("called")
