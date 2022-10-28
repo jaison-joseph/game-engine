@@ -143,24 +143,17 @@ class Scene:
     def end(self):
         pygame.quit()
 
-
     def pause(self):
         pass
 
     def clear(self):
-        pass
+        self.screen.blit(self.background, (0, 0))
 
     def hideCursor(self):
-        pass
+        pygame.mouse.set_visible(False)
 
     def showCursor(self):
-        pass
+        pygame.mouse.set_visible(True)
 
     def getMousePos(self):
-        pass
-
-    def hide(self):
-        pass
-
-    def show(self):
-        pass
+        return pygame.mouse.get_pos()

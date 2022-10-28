@@ -70,7 +70,7 @@ class Sprite(pygame.sprite.Sprite):
         '''
         the position of the center of the sprite
         '''
-        self.position = [width//2, height//2]
+        # self.position = [width//2, height//2]
 
         '''
         the angle at which the image is pointed/tilted
@@ -136,33 +136,6 @@ class Sprite(pygame.sprite.Sprite):
         a flag used to determine whether to the sprite is within the screen/set to visible by the user
         '''
         self.isVisible = True
-
-
-    '''
-    filling in the color of the sprite; either pass in the relative location of 
-    a picture or give a solid color
-    '''
-    def setImage(self, imgFileName = None, rgb = None):
-        # if the imgFileName is None, the user wants to fill the sprite with a solid color
-        if imgFileName is None:
-            # if both the imgFileName and rgb are none, we have no fill information; use some default
-            if rgb is None:
-                print("Sprite has not been passed a color or imgFileName. Defaulting to red color fill")
-                rgb = (255, 0, 0)
-            self.image.fill(rgb)
-        else:
-            '''
-            we will first create a surface object by calling pygame.image.load
-            then, we scale the surface object's size by calling the trasform.scale method
-            we pass into the transform.scale method the following:
-                the surface object we wish to scale
-                the desired width and height after the transform
-            '''
-            self.image = pygame.transform.scale(
-                pygame.image.load(imgFileName), #returns a surface object
-                self.size
-            )
-        self.image = self.image.convert()
 
     '''
     uses the pygame.surface.blit method to draw the sprite's surface onto the scene surface
@@ -282,19 +255,34 @@ class Sprite(pygame.sprite.Sprite):
 
         Applying a not() to the result of the 4 cases will return True if the sprites do collide
     '''
+    # def collidesWith(self, s):
+    #     if self.isVisible and s.isVisible:
+    #         w, h = self.size
+    #         w = w/2
+    #         h = h/2
+    #         l, r = self.position[0] - w, self.position[0] + w
+    #         u, d = self.position[1] + h, self.position[1] - h
+
+    #         w_, h_ = self.size
+    #         w_ = w_/2
+    #         h_ = h_/2
+    #         l_, r_ = s.position[0] - w_, s.position[0] + w_
+    #         u_, d_ = s.position[1] + h_, s.position[1] - h_
+
+    #         return not(
+    #             (d < u_) or (d_ < u) or (r < l_) or (r_ < l)
+    #         )
+    #     return False
+
     def collidesWith(self, s):
         if self.isVisible and s.isVisible:
             w, h = self.size
-            w = w/2
-            h = h/2
-            l, r = self.position[0] - w, self.position[0] + w
-            u, d = self.position[1] + h, self.position[1] - h
+            l, r = self.rect.x, self.rect.x + w
+            u, d = self.rect.y, self.rect.y + h
 
-            w_, h_ = self.size
-            w_ = w_/2
-            h_ = h_/2
-            l_, r_ = s.position[0] - w_, s.position[0] + w_
-            u_, d_ = s.position[1] + h_, s.position[1] - h_
+            w_, h_ = s.size
+            l_, r_ = s.rect.x, s.rect.x + w_
+            u_, d_ = s.rect.y, s.rect.y + h_
 
             return not(
                 (d < u_) or (d_ < u) or (r < l_) or (r_ < l)
