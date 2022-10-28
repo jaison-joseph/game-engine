@@ -1,5 +1,9 @@
 from Sprite import Sprite
 from Scene import Scene
+import os
 
-scene = Scene((640, 480), [], 30, None)
+box = Sprite(None, 20, 20)
+scene = Scene((1080, 720), (box), 30, None, None)
 scene.start()
+
+# print(os.getcwd())
