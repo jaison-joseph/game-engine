@@ -1,19 +1,59 @@
+'''
+a Scene class that (ideally) contains sprite's 
+it is essentially the pygame.Surface object on which the game's sprites get drawn onto
+'''
 import pygame
 from pygame.locals import *
 from WalkieTalkie import WalkieTalkie
 import os
+
+'''
+initializing pygame's modules; required before pygame function calls
+'''
 pygame.init()
 
 class Scene:
+    '''
+    size: size of the screen, a two number tuple
+    sprites: a hashable container containing all the sprite objects for the scene
+    frameRate: desired upper limit to the game's frame rate
+    backgroundImgSrc: relative path to image for the background
+    rgb: 3 number tuple with each number in the range [0, 255] to determine 
+    '''
     def __init__(self, size, sprites, frameRate: int, backgroundImgSrc = None, rgb = None) -> None:
         self.size_ = size
+        
+        '''
+        the walkieTalkie is a way for the sprites to communicate with the scene object
+        the built in use of the walkieTalkie object is for the sprites to signal to the scene to stop the core game loop
+        '''
         self.walkieTalkie = WalkieTalkie()
+        
+        '''
+        each sprite needs a reference to the parent scene object for:
+            keyboard input (the scene object has the keyboard input)
+            scene dimensions for boundary checking
+            sprite's draw method (the sprites draw on the scene) 
+        '''
         for i in sprites:
             i.scene = self
             i.walkieTalkie = self.walkieTalkie
-        self.position_ = None
+        
+        '''
+        a pygame sprite group is a collection of sprite objects that is convenient to manage
+        for more: https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group 
+        '''
         self.sprites_ = pygame.sprite.Group(sprites)
+
+        '''
+        the frame rate of the game
+        '''
         self.frameRate_ = frameRate
+
+        '''
+        a dictionary of key value pairs that maintains the state of keys in the keyboarde
+        the keys that are maintained are [a-z] and [0-9]
+        '''
         self.keyState_ = {
             "a": False,
             "b": False,
@@ -52,9 +92,22 @@ class Scene:
             "8": False,
             "9": False
         }
+        
+        '''
+        initializing the window with the desired dimensions 
+        '''
         self.screen = pygame.display.set_mode(self.size_)
-        self.mouseButton_ = []
+
+        '''
+        intializing a surface object
+        in pygame, if any surface is being drawn on, it is a surface object
+        so, the background is a pygame surface object
+        '''
         self.background = pygame.Surface(self.size_)
+
+        '''
+        if neither the background image location nor the rgb tuple is supplied, the Scene defaults to a solid black fill
+        '''
         if backgroundImgSrc is None:
             if rgb is None:
                 print("Scene has not been passed a color or imgFileName. Defaulting to black background fill")
@@ -74,15 +127,27 @@ class Scene:
                 pygame.image.load(backgroundImgSrc), #returns a surface object
                 self.size_
             )
+
+        '''
+        the convert method changes the format of the surface object that
+        makes it very quick to blit.
+
+        https://www.pygame.org/docs/ref/surface.html#pygame.Surface.convert
+        '''
         self.background = self.background.convert()
 
+    '''
+    the heart of the Scene class; the main loop that controls the screen 
+    '''
     def start(self):
+        # start the clock; used for maintaining frame rate
         clock = pygame.time.Clock()
         while True:
-            clock.tick(self.frameRate_)
+            # attempt to get a message from the walkie talkie; if we get a 'QUIT', stop the loop
             msg = self.walkieTalkie.getMessage()
             if msg is not None:
                 if msg == 'QUIT':
+                    self.end()
                     print("You win; wohoo")
                     return
             for event in pygame.event.get():
@@ -90,6 +155,7 @@ class Scene:
                     self.end()
                     return
             
+            # update the key states by getting the state of each of the keys in the keyState dictionary
             if True:
                 self.keyState_["a"] = pygame.key.get_pressed()[K_a]
                 self.keyState_["b"] = pygame.key.get_pressed()[K_b]
@@ -133,27 +199,49 @@ class Scene:
             # clear the sprites drawn in the previous frame by drawing the background over them
             self.sprites_.clear(self.screen, self.background)
 
-            # update all the sprites
+            # update all the sprites, by calling their update methods
             self.sprites_.update()
+
+            # draw the sprites onto the screen
             self.sprites_.draw(self.screen)
 
+            # show the stuff on the screen object to the actual screen
             pygame.display.flip()
 
+            # method that automatically adjusts tick (delay) to maintain desired frame rate
+            clock.tick(self.frameRate_)
 
+    '''
+    method to call once the end loop ends / just before the main loop ends
+    '''
     def end(self):
+        # unitializes all the pygame modules
         pygame.quit()
 
+    '''
+    TODO
+    '''
     def pause(self):
         pass
 
     def clear(self):
+        # blit's the background onto the screen, effectively 'clearing' the screen
         self.screen.blit(self.background, (0, 0))
 
+    '''
+    hide the cursor of the machine
+    '''
     def hideCursor(self):
         pygame.mouse.set_visible(False)
 
+    '''
+    un-hide/show the cursor of the machine
+    '''
     def showCursor(self):
         pygame.mouse.set_visible(True)
 
+    '''
+    returns the (x, y) computer screen coordinates of the mouse
+    '''
     def getMousePos(self):
         return pygame.mouse.get_pos()
