@@ -18,3 +18,11 @@
 
 * The engine has 2 parts, a Sprite class, a Scene class.
 * A WalkieTalkie class is also defined for communication between the sprites and the scene.
+* To create a game:
+    * To instantiate a sprite, you'll first need to create a child/derived class of the Sprite class and define an update() method. 
+        * For a good example, refer to the classes defined in `runner.py`
+    * Once you have defined that child class, instances of it can be used as Sprites.
+    * Then you can instantiate a scene class object, pass into it's constructor a container with the sprites for that scene
+    * Then you can call the `Scene.start()` method to start your game, again refer to `runner.py` to see how it's done!
+* Refer to the UML in the repo for the overview of the classes
+* All explanations for the engine's class attributes and methods are left as **detailed** comments.
