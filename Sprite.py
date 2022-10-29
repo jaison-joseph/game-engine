@@ -1,14 +1,46 @@
+'''
+Basic Sprite class for sprites 
+Inherits from pygame's sprite class
+
+'''
+
 import pygame, math
 
+'''
+initializing pygame's modules; required before pygame function calls
+'''
 pygame.init()
 
+'''
+Math constants used for basic physics stuff
+'''
 constants = {
     'ninety': math.pi / 2,
     'degree2rad': math.pi / 180,
     'rad2degree': 180 / math.pi
 }
 
+'''
+options to configure the behavoir of the sprite when it reaches 
+a boundary of a screen
+'''
+boundActionOptions = {
+    'NONE': 1,
+    'WRAP': 2,
+    'STOP': 3
+}
+
 class Sprite(pygame.sprite.Sprite):
+    '''
+    Params:
+        scene: the scene object that the sprite belongs to
+        width: width of the sprite(in pixels)
+        height: height of the sprite(in pixels)
+        x: starting x coordinate of the upper left hand corner of the sprite
+        y: starting y coordinate of the lower right hand corner of the sprite
+        imgFileName: relative name of the file location of the sprite
+        rgb: a 3 number tuple that describes the fill of the sprite
+    '''
     def __init__(self, scene, width, height, x = 0, y = 0, imgFileName = None, rgb = None) -> None:
 
         '''
@@ -32,11 +64,19 @@ class Sprite(pygame.sprite.Sprite):
         '''
         self.rect = self.image.get_rect()
 
+        '''
+        setting the start position of the sprite
+        self.rect's x and y attributes are used to draw the sprite
+        '''
         self.rect.x = x
         self.rect.y = y
 
         '''
         coloring the sprite
+        we assume the user either wishes to color the sprite with a solid fill
+        or wants to use an image to fill the sprite
+        if none are supplied, the sprite will default to a solid red fill
+        if both are supplied, the sprite will default to the image
         '''
         if imgFileName is None:
             # if both the imgFileName and rgb are none, we have no fill information; use some default
@@ -153,16 +193,34 @@ class Sprite(pygame.sprite.Sprite):
     def update(self):
         pass
 
+    '''
+    the bool self.isVisible controls whether the sprite is drawn on the screen;
+        setting it to False will cause it to NOT be drawn
+    '''
     def hide(self):
         self.isVisible = False
 
+    '''
+    the bool self.isVisible controls whether the sprite is drawn on the screen;
+        setting it to True will cause it to be drawn
+    '''
     def show(self):
         self.isVisible = True
 
+    '''
+    set the sprite's speed (pixels/frame)
+    the sprite class uses the dx and dy attributes to move the sprite's location
+    on a frame by frame basis
+    so once we get the new speed, we project it at an angle of self.moveAngle
+    along the x and y axes of the screen to get the new dx and dy
+    '''
     def setSpeed(self, magnitude):
         self.speed = magnitude
         self.dx, self.dy = self.vectProject(magnitude, self.moveAngle)
 
+    '''
+    set's the image angle of the sprite
+    '''
     def setImgAngle(self, imgAngle):
         self.imgAngle = imgAngle
 
@@ -205,8 +263,25 @@ class Sprite(pygame.sprite.Sprite):
     def setBoundAction(self):
         pass
 
+    '''
+    the method returns:
+        true if the sprite is out of bounds of the screen's dimensions
+        false otherwise
+    
+    we simply find the x coordinates, l & r of the sprite's left and right edges, and the 
+    y coordinates, u & d of the sprite's upper and lower edges.
+
+    then we check if the left edge or the upper edge are < 0
+    we also check if the lower edge > the height of the screen 
+        (remember that the y axis is inverted i.e. it increases downwards)
+    and finally check if the right edge > the width of the screen
+    if either of the 4 cases return True, the sprite is out of bounds
+    '''
     def checkBounds(self):
-        pass    
+        w, h = self.size
+        l, r = self.rect.x, self.rect.x + w
+        u, d = self.rect.y, self.rect.y + h
+        return u < 0 or l < 0 or r > self.scene.size[0] or d > self.scene.size[1]    
 
     '''
     box-based collision detection
@@ -255,25 +330,6 @@ class Sprite(pygame.sprite.Sprite):
 
         Applying a not() to the result of the 4 cases will return True if the sprites do collide
     '''
-    # def collidesWith(self, s):
-    #     if self.isVisible and s.isVisible:
-    #         w, h = self.size
-    #         w = w/2
-    #         h = h/2
-    #         l, r = self.position[0] - w, self.position[0] + w
-    #         u, d = self.position[1] + h, self.position[1] - h
-
-    #         w_, h_ = self.size
-    #         w_ = w_/2
-    #         h_ = h_/2
-    #         l_, r_ = s.position[0] - w_, s.position[0] + w_
-    #         u_, d_ = s.position[1] + h_, s.position[1] - h_
-
-    #         return not(
-    #             (d < u_) or (d_ < u) or (r < l_) or (r_ < l)
-    #         )
-    #     return False
-
     def collidesWith(self, s):
         if self.isVisible and s.isVisible:
             w, h = self.size
@@ -290,10 +346,19 @@ class Sprite(pygame.sprite.Sprite):
         return False
 
     '''
-    returns the distance between the centers of two sprites
+    returns the distance between two sprites
+
+    Uses the distance between 2 points in 2D space formula.
+    If the points are (x1, y1) and (x2, y2), then:
+        distance = ((x2 - x1)**2 +(y2 - y1)**2)**0.5 
+
+    the points used in the formula are the upper left hand coordinates of the
+    two sprites, but that yields the same answer as using the formula with
+    the center of the two sprites since our sprites are treated as rectangles,
+    so everything is nice and symmetrical
     '''
     def distanceTo(self, s):
-        return ((self.position[0] - s.position[0])**2 + (self.position[1] - s.position[1])**2)**0.5
+        return ((self.rect.x - s.rect.x)**2 + (self.rect.y - s.rect.y)**2)**0.5
 
     def angleTo(self):
         pass
