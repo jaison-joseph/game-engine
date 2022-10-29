@@ -2,3 +2,4 @@ js/
 pygame_shit/
 playgrounds/
 __pycache__/
+*.drawio

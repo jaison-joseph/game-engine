@@ -1,5 +1,5 @@
 '''
-the box collision game!
+the box collision game! For instructions on how to play, look at the README
 '''
 
 from Sprite import Sprite

@@ -96,21 +96,6 @@ class Sprite(pygame.sprite.Sprite):
                 pygame.image.load(imgFileName), #returns a surface object
                 self.size
             )
-        
-        '''
-        the convert function converts a Surface object into 
-        the format that is used for drawing onto the display;
-        this is a relatively slow operation so it makes sense
-        to just call it once during initialization
-
-        See: https://www.pygame.org/docs/ref/surface.html#pygame.Surface.convert
-        '''
-        # self.image = self.image.convert()
-
-        '''
-        the position of the center of the sprite
-        '''
-        # self.position = [width//2, height//2]
 
         '''
         the angle at which the image is pointed/tilted
@@ -360,5 +345,5 @@ class Sprite(pygame.sprite.Sprite):
     def distanceTo(self, s):
         return ((self.rect.x - s.rect.x)**2 + (self.rect.y - s.rect.y)**2)**0.5
 
-    def angleTo(self):
+    def angleTo(self, s):
         pass
